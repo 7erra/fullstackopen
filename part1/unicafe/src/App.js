@@ -8,7 +8,10 @@ const Button = ({ name, fnc }) => {
 
 const StatisticLine = ({ text, value }) => {
   return (
-    <p>{text} {value}</p>
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
   )
 }
 
@@ -24,13 +27,15 @@ const Statistics = ({ feedback }) => {
   let average = (good - bad) / all || 0;
   let positive = (good / all || 0) * 100;
   return (
-    <div>
-      <StatisticLine text="good" value={good} />
-      <StatisticLine text="neutral" value={neutral} />
-      <StatisticLine text="bad" value={bad} />
-      <StatisticLine text="average" value={average} />
-      <StatisticLine text="positive" value={positive.toString() + "%"} />
-    </div>
+    <table>
+      <tbody>
+        <StatisticLine text="good" value={good} />
+        <StatisticLine text="neutral" value={neutral} />
+        <StatisticLine text="bad" value={bad} />
+        <StatisticLine text="average" value={average} />
+        <StatisticLine text="positive" value={positive.toString() + "%"} />
+      </tbody>
+    </table>
   )
 }
 
