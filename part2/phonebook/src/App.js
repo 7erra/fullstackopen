@@ -26,6 +26,15 @@ const Person = ({ person, removePerson }) => {
   )
 }
 
+const Notification = ({ message, type }) => {
+  if (message === null) return null
+  return (
+    <div className={type}>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
   useEffect(() => {
@@ -44,7 +53,13 @@ const App = () => {
     personService
       .remove(id)
       .then(() => {
-        setPersons(persons.filter((p) => p.id !== id))
+        showMessage(`Deleted ${name}`)
+      })
+      .catch(() => {
+        showMessage(`Information of ${name} has already been removed from the server`, "message-error")
+      })
+      .finally(() => {
+        setPersons(persons.filter(p => p.id !== id))
       })
   }
 
@@ -53,6 +68,7 @@ const App = () => {
   const addName = (event) => {
     event.preventDefault()
     if (persons.some(e => e.name === newName)) {
+      // Person already exists
       if (!window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`))
         return
 
@@ -62,6 +78,9 @@ const App = () => {
         .changeNumber(changedPerson)
         .then(person => {
           setPersons(persons.map(p => p.id === person.id ? changedPerson : p))
+          showMessage(`Changed ${person.name}'s number to ${changedPerson.number}`)
+          setNewName("")
+          setNewNumber("")
         })
       return
     }
@@ -77,15 +96,27 @@ const App = () => {
         setPersons(persons.concat(returnedPerson))
         setNewName("")
         setNewNumber("")
+        showMessage(`Added ${person.name}`)
       })
   }
 
   const [newNumber, setNewNumber] = useState("")
   const [filter, setFilter] = useState("")
 
+  // Notifications
+  const [message, setMessage] = useState(null)
+  const [messageType, setMessageType] = useState("message")
+
+  const showMessage = (content, type = "message") => {
+    setMessageType(type)
+    setMessage(content)
+    setTimeout(() => setMessage(null), 5000)
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} type={messageType} />
       <Input label="filter shown with" value={filter} onChange={e => setFilter(e.target.value)} />
       <h2>add a new</h2>
       <form onSubmit={addName}>
