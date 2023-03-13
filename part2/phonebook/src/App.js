@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from "axios"
+import personService from "./services/persons"
 
 const Input = ({ label, value, onChange }) => {
   return (
@@ -9,55 +9,78 @@ const Input = ({ label, value, onChange }) => {
   )
 }
 
-const Book = ({ persons }) => {
+const Book = ({ persons, removePerson }) => {
   return (
     <div>
-      {persons.map(p => <Person key={p.name} name={p.name} number={p.number} />)}
+      {persons.map(p => <Person key={p.id} person={p} removePerson={removePerson} />)}
     </div>
   )
 }
 
-const Person = ({ name, number }) => {
+const Person = ({ person, removePerson }) => {
+  const { name, number } = person
   return (
-    <div>{name} {number} </div>
+    <div>
+      {name} {number} <button onClick={() => removePerson(person)}>Delete</button>
+    </div>
   )
 }
 
 const App = () => {
-  // const [persons, setPersons] = useState([
-  //   { name: 'Arto Hellas', number: '040-123456', id: 1 },
-  //   { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-  //   { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-  //   { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  // ]) 
   const [persons, setPersons] = useState([])
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/db")
-      .then(response => {
-        setPersons(response.data.persons)
+    personService
+      .getAll()
+      .then(persons => {
+        setPersons(persons)
       })
   }, [])
+
+  const removePerson = (person) => {
+    const { id, name } = person
+    if (!window.confirm(`Delete ${name}?`)) {
+      return
+    }
+    personService
+      .remove(id)
+      .then(() => {
+        setPersons(persons.filter((p) => p.id !== id))
+      })
+  }
 
   const [newName, setNewName] = useState('')
 
   const addName = (event) => {
     event.preventDefault()
     if (persons.some(e => e.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
+      if (!window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`))
+        return
+
+      const personToChange = persons.find(e => e.name === newName)
+      const changedPerson = { ...personToChange, number: newNumber }
+      personService
+        .changeNumber(changedPerson)
+        .then(person => {
+          setPersons(persons.map(p => p.id === person.id ? changedPerson : p))
+        })
       return
     }
+
     const person = {
       name: newName,
       number: newNumber
     }
-    setPersons(persons.concat(person))
-    setNewName("")
-    setNewNumber("")
+
+    personService
+      .create(person)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName("")
+        setNewNumber("")
+      })
   }
 
   const [newNumber, setNewNumber] = useState("")
-
   const [filter, setFilter] = useState("")
 
   return (
@@ -73,7 +96,7 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-      <Book persons={persons.filter(p => filter === "" || p.name.toLowerCase().includes(filter.toLowerCase()))} />
+      <Book persons={persons.filter(p => filter === "" || p.name.toLowerCase().includes(filter.toLowerCase()))} removePerson={removePerson} />
     </div>
   )
 }
