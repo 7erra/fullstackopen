@@ -9,7 +9,7 @@ function StartSearch() {
   )
 }
 
-function List({ countries, setElement }) {
+function List({ countries, setCountry }) {
   if (countries.length > 10) {
     return (
       <div>Too many matches, specify another filter</div>
@@ -22,7 +22,7 @@ function List({ countries, setElement }) {
         countries.map(c =>
           <div key={c.cca3}>
             {c.name.common}
-            <button onClick={() => setElement(<Country data={c} />)}>Show</button>
+            <button onClick={() => setCountry(c.name.common)}>Show</button>
           </div>
         )
       }
@@ -30,11 +30,24 @@ function List({ countries, setElement }) {
   )
 }
 
-function Country({ data }) {
+function Weather({ data }) {
+  if (data == null) return (<div>Weather unavailable</div>)
+  return (
+    <div>
+      <div>Temperature: {Math.round((data.main.temp - 273.15) * 10) / 10}°C</div>
+      <img src={`https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`} alt={data.weather[0].main} />
+      <div>Wind: {data.wind.speed} m/s</div>
+    </div >
+  )
+
+}
+
+function Country({ data, weather }) {
+  const capital = data.capital[0]
   return (
     <div>
       <h2>{data.name.common}</h2>
-      <div>capital {data.capital[0]}</div>
+      <div>capital {capital}</div>
       <div>area {data.area}</div>
       <br />
       <div><b>languages:</b></div>
@@ -42,6 +55,8 @@ function Country({ data }) {
         {Object.keys(data.languages).map(key => <li key={key}>{data.languages[key]}</li>)}
       </ul>
       <img alt={`Flag of {data.name.common}`} src={data.flags.png} />
+      <h2>Weather in {capital}</h2>
+      <Weather data={weather} />
     </div>
   )
 }
@@ -60,6 +75,7 @@ function App() {
   const [country, setCountry] = useState(null)
 
   useEffect(() => {
+    const api_key = process.env.REACT_APP_API_KEY
     if (country == null) return
     if (country === "") {
       setElement(<StartSearch />)
@@ -69,13 +85,25 @@ function App() {
       .get(`https://restcountries.com/v3.1/name/${country}`)
       .then(({ data }) => {
         if (data.length === 1) {
-          setElement(<Country data={data[0]} />)
+          const countrydata = data[0]
+          console.log(data)
+          const [lat, lon] = countrydata.capitalInfo.latlng
+          axios
+            .get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${api_key}`)
+            .then(({ data }) => {
+              console.log("Got weather data", data)
+              setElement(<Country data={countrydata} weather={data} />)
+            })
+            .catch(() => {
+              console.log("Failed to get weather data")
+              setElement(<Country data={countrydata} weather={null} />)
+            })
         } else {
-          setElement(<List countries={data} setElement={setElement} />)
+          setElement(<List countries={data} setCountry={setCountry} />)
         }
       })
       .catch(() => {
-        setElement(NoResult)
+        setElement(<NoResult />)
       })
   }, [country])
 
