@@ -8,7 +8,7 @@ if (password == undefined) {
 }
 
 mongoose.set('strictQuery', false)
-mongoose.connect("mongodb://127.0.0.1:27017/")
+mongoose.connect("mongodb://127.0.0.1:27017/phonebook?retryWrites=true&w=majority")
 const Person = mongoose.model("Person", new mongoose.Schema({
   name: String,
   number: String
