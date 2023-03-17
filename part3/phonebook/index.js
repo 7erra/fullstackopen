@@ -10,7 +10,7 @@ morgan.token("data", (request) => {
 })
 
 app.use(morgan(":method :url :status - :total-time ms :data"))
-app.use(express.static("build"))
+app.use(express.static("../frontend/build/"))
 
 let persons = [
   {
