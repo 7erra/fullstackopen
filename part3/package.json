@@ -6,10 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "frontend": "cd ./frontend/ && npm start",
-    "backend": "cd ./phonebook/ && npm run dev",
+    "backend": "cd ./backend/ && npm run dev",
     "build:ui": "cd ./frontend/ && npm install && npm run build",
     "deploy:full": "npm run build:ui && git add . && git commit -m \"auto build\" && git push",
-    "render": "npm run build:ui && cd ./phonebook/ && npm install && npm start"
+    "render": "npm run build:ui && cd ./backend/ && npm install && npm start"
   },
   "author": "Terra",
   "license": "MIT"
