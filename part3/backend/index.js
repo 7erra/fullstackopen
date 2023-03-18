@@ -6,9 +6,7 @@ const Person = require("./model/person")
 const app = express()
 app.use(express.json())
 app.use(cors())
-morgan.token("data", (request) => {
-  return JSON.stringify(request.body)
-})
+morgan.token("data", (request) => JSON.stringify(request.body))
 app.use(morgan(":method :url :status - :total-time ms :data"))
 app.use(express.static("../frontend/build/"))
 
@@ -35,20 +33,19 @@ function errorHandler(error, _, response, next) {
       break;
   }
 
-  if (message)
-    return response.status(400).send({ error: message })
+  if (message) return response.status(400).send({ error: message })
 
-  next(error)
+  return next(error)
 }
 
 app.get("/api/persons", (_, response) => {
-  getAllPersons().then(persons => {
+  getAllPersons().then((persons) => {
     response.json(persons)
   })
 })
 
 app.get("/info", (_, response) => {
-  getAllPersons().then(persons => {
+  getAllPersons().then((persons) => {
     response.send(`Phonebook has info for ${persons.length} people.<br/>${new Date()}`)
   })
 })
@@ -56,25 +53,24 @@ app.get("/info", (_, response) => {
 app.get("/api/persons/:id", (request, response, next) => {
   Person
     .findById(request.params.id)
-    .then(person => {
+    .then((person) => {
       if (person) {
         response.json(person)
       } else {
         response.status(404).end()
       }
     })
-    .catch(error => {
+    .catch((error) => {
       next(error)
     })
-
 })
 
 app.delete("/api/persons/:id", (request, response) => {
-  const id = request.params.id
+  const { id } = request.params
   Person
     .findByIdAndRemove(id)
     .then(() => response.status(204).end())
-    .catch(err => console.log(err.message))
+    .catch((err) => console.log(err.message))
   // persons = persons.filter(p => p.id !== id)
   response.send()
 })
@@ -89,7 +85,7 @@ app.post("/api/persons", async (request, response, next) => {
     message = "Name is missing"
   } else if (!number) {
     message = "Number is missing"
-  } else if (persons.find(p => p.name === name)) {
+  } else if (persons.find((p) => p.name === name)) {
     message = "Name must be unique"
   }
 
@@ -98,17 +94,17 @@ app.post("/api/persons", async (request, response, next) => {
   }
 
   const newPerson = new Person({
-    name: name,
-    number: number
+    name,
+    number,
   })
-  response.json(await newPerson.save().catch(error => next(error)))
+  return response.json(await newPerson.save().catch((error) => next(error)))
 })
 
 app.put("/api/persons/:id", async (request, response, next) => {
   const { name, number } = request.body
   const updatedPerson = await Person
-    .findByIdAndUpdate(request.params.id, { name: name, number: number }, { new: true, runValidators: true, context: "query" })
-    .catch(error => {
+    .findByIdAndUpdate(request.params.id, { name, number }, { new: true, runValidators: true, context: "query" })
+    .catch((error) => {
       console.log(error)
       next(error)
     })
@@ -127,4 +123,3 @@ const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
-
