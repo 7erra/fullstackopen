@@ -12,11 +12,24 @@ mongoose.set('strictQuery', false)
 console.log("Connecting to ", url)
 mongoose.connect(url)
   .then(() => console.log("Connected!"))
-  .catch(error => console.log("Error trying to connect to database: ", error.message))
+  .catch(error => {
+    console.log("Error trying to connect to database: ", error.message)
+    proces.exit(1)
+  })
 
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String
+  name: {
+    type: String,
+    minLength: 3
+  },
+  number: {
+    type: String,
+    minLength: 8,
+    validate: {
+      validator: v => /^\d{2,3}-\d+$/.test(v),
+      message: props => `${props.value} is not a valid phone number. Must have format: 12[3]-4567...`
+    }
+  }
 })
 personSchema.set("toJSON", {
   transform: (_, ret) => {

@@ -82,6 +82,9 @@ const App = () => {
           setNewName("")
           setNewNumber("")
         })
+        .catch(error => {
+          showMessage(error.response.data.error, "message-error")
+        })
       return
     }
 
@@ -97,6 +100,9 @@ const App = () => {
         setNewName("")
         setNewNumber("")
         showMessage(`Added ${person.name}`)
+      })
+      .catch(error => {
+        showMessage(error.response.data.error, "message-error")
       })
   }
 

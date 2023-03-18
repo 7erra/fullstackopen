@@ -22,9 +22,22 @@ function unknownEndpoint(_, response) {
 
 function errorHandler(error, _, response, next) {
   console.log(error.message)
-  if (error.name === "CastError") {
-    return response.status(400).send({ error: "Malformatted id" })
+
+  let message;
+  switch (error.name) {
+    case "CastError":
+      message = "Malformatted id"
+      break;
+    case "ValidationError":
+      message = error.message
+      break;
+    default:
+      break;
   }
+
+  if (message)
+    return response.status(400).send({ error: message })
+
   next(error)
 }
 
@@ -66,7 +79,7 @@ app.delete("/api/persons/:id", (request, response) => {
   response.send()
 })
 
-app.post("/api/persons", async (request, response) => {
+app.post("/api/persons", async (request, response, next) => {
   const { name, number } = request.body
 
   const persons = await getAllPersons()
@@ -88,13 +101,13 @@ app.post("/api/persons", async (request, response) => {
     name: name,
     number: number
   })
-  response.json(await newPerson.save())
+  response.json(await newPerson.save().catch(error => next(error)))
 })
 
 app.put("/api/persons/:id", async (request, response, next) => {
   const { name, number } = request.body
   const updatedPerson = await Person
-    .findByIdAndUpdate(request.params.id, { name: name, number: number }, { new: true })
+    .findByIdAndUpdate(request.params.id, { name: name, number: number }, { new: true, runValidators: true, context: "query" })
     .catch(error => {
       console.log(error)
       next(error)
