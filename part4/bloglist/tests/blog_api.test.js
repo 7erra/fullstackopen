@@ -57,6 +57,16 @@ test("Missing likes in request defaults to 0", async () => {
   expect(body.likes).toBe(0)
 })
 
+test("Missing title/url results in error code 400", async () => {
+  for (let removed of ["url", "title"]) {
+    const { [removed]: _, ...blog } = newBlog
+    await api
+      .post("/api/blogs")
+      .send(blog)
+      .expect(400)
+  }
+})
+
 afterAll(async () => {
   await mongoose.disconnect()
 })

@@ -36,7 +36,14 @@ module.exports = {
     "arrow-spacing": [
       "error", { "before": true, "after": true }
     ],
-    "no-console": 0,
-  }
+    "no-unused-vars": [
+      "warn", // or "error"
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+  },
 }
 

@@ -10,6 +10,10 @@ blogsRouter.get("/", async (_, response) => {
 
 blogsRouter.post("/", async (request, response) => {
   let body = { ...request.body, likes: request.body.likes ?? 0 }
+  if (body.url === undefined || body.title === undefined) {
+    response.status(400).end()
+    return
+  }
   const blog = new Blog(body)
 
   const result = await blog.save()
