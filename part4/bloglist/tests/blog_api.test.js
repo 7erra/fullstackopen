@@ -6,10 +6,10 @@ const { default: mongoose } = require("mongoose")
 
 const api = supertest(app)
 const newBlog = {
-  title: "Google",
-  url: "google.com",
-  likes: 1233,
-  author: "Alphabet Inc."
+  title: "Fullstack",
+  url: "fullstackopen.com",
+  likes: 123,
+  author: "University of Helsinki"
 }
 
 beforeEach(async () => {
@@ -65,6 +65,17 @@ test("Missing title/url results in error code 400", async () => {
       .send(blog)
       .expect(400)
   }
+})
+
+test("Delete resource", async () => {
+  const { body } = await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+
+  await api
+    .delete(`/api/blogs/${body.id}`)
+    .expect(204)
 })
 
 afterAll(async () => {
