@@ -78,6 +78,12 @@ test("Delete resource", async () => {
     .expect(204)
 })
 
+test("Delete resource (wrong id)", async () => {
+  await api
+    .delete("/api/blogs/xxx")
+    .expect(400)
+})
+
 afterAll(async () => {
   await mongoose.disconnect()
 })
