@@ -19,6 +19,13 @@ test("Get all blogs", async () => {
   expect(body).toHaveLength(helper.initialBlogs.length)
 })
 
+test("Correct ID", async () => {
+  const { body } = await api.get("/api/blogs")
+  body.forEach(blog => {
+    expect(blog.id).toBeDefined()
+  })
+})
+
 afterAll(async () => {
   await mongoose.disconnect()
 })
