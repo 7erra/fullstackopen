@@ -1,3 +1,5 @@
+const Blog = require("../models/blog")
+
 const initialBlogs = [
   {
     _id: "5a422a851b54a676234d17f7",
@@ -49,7 +51,22 @@ const initialBlogs = [
   }
 ]
 
+const testBlog = {
+  title: "Fullstack",
+  url: "fullstackopen.com",
+  likes: 123,
+  author: "University of Helsinki"
+}
+
+async function createTempBlog() {
+  const blog = new Blog(testBlog)
+  await blog.save()
+  return blog
+}
+
 module.exports = {
-  initialBlogs
+  initialBlogs,
+  createTempBlog,
+  testBlog
 }
 

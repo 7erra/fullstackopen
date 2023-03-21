@@ -5,12 +5,6 @@ const helper = require("./helper")
 const { default: mongoose } = require("mongoose")
 
 const api = supertest(app)
-const newBlog = {
-  title: "Fullstack",
-  url: "fullstackopen.com",
-  likes: 123,
-  author: "University of Helsinki"
-}
 
 beforeEach(async () => {
   await Note.deleteMany({})
@@ -35,11 +29,11 @@ test("Correct ID", async () => {
 test("Create new blog", async () => {
   const { body } = await api
     .post("/api/blogs")
-    .send(newBlog)
+    .send(helper.testBlog)
     .expect(201)
     .expect("Content-Type", /json/)
 
-  expect(body).toMatchObject(newBlog)
+  expect(body).toMatchObject(helper.testBlog)
 
   const { body: allBlogs } = await api.get("/api/blogs")
   expect(allBlogs).toHaveLength(helper.initialBlogs.length + 1)
@@ -47,7 +41,7 @@ test("Create new blog", async () => {
 
 test("Missing likes in request defaults to 0", async () => {
   // eslint-disable-next-line no-unused-vars
-  const { likes: _, ...blogNoLikes } = newBlog
+  const { likes: _, ...blogNoLikes } = helper.testBlog
   const { body } = await api
     .post("/api/blogs")
     .send(blogNoLikes)
@@ -59,7 +53,7 @@ test("Missing likes in request defaults to 0", async () => {
 
 test("Missing title/url results in error code 400", async () => {
   for (let removed of ["url", "title"]) {
-    const { [removed]: _, ...blog } = newBlog
+    const { [removed]: _, ...blog } = helper.testBlog
     await api
       .post("/api/blogs")
       .send(blog)
@@ -67,14 +61,11 @@ test("Missing title/url results in error code 400", async () => {
   }
 })
 
-test("Delete resource", async () => {
-  const { body } = await api
-    .post("/api/blogs")
-    .send(newBlog)
-    .expect(201)
 
+test("Delete resource", async () => {
+  const { id } = await helper.createTempBlog()
   await api
-    .delete(`/api/blogs/${body.id}`)
+    .delete(`/api/blogs/${id}`)
     .expect(204)
 })
 
@@ -82,6 +73,27 @@ test("Delete resource (wrong id)", async () => {
   await api
     .delete("/api/blogs/xxx")
     .expect(400)
+})
+
+test("Update resource", async () => {
+  const newLikes = 456
+  const newBlog = await helper.createTempBlog()
+  const { body } = await api
+    .put(`/api/blogs/${newBlog.id}`)
+    .send({ likes: newLikes })
+    .expect(200)
+  expect(body.likes).toBe(newLikes)
+})
+
+test("Update resource (404)", async () => {
+  const id = new mongoose.Types.ObjectId()
+  console.log(id)
+
+  await api
+    .put(`/api/blogs/${id.toString()}`)
+    .send({ likes: 456 })
+    .expect(404)
+
 })
 
 afterAll(async () => {
