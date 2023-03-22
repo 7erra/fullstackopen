@@ -5,6 +5,18 @@ const User = require("../models/user")
 usersRouter.post("/", async (request, response) => {
   const { username, name, password } = request.body
 
+  let errorMessage
+  if (password === undefined) {
+    errorMessage = "No password given!"
+  } else if (username === undefined) {
+    errorMessage = "No username given!"
+  } else if (password.length < 3) {
+    errorMessage = "Password too short! Must have at least 3 characters!"
+  } else if (await User.findOne({ username })) {
+    errorMessage = "Username already taken!"
+  }
+  if (errorMessage) return response.status(400).send({ error: errorMessage })
+
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
 
