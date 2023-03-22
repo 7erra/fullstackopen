@@ -7,6 +7,7 @@ function errorHandler(error, request, response, next) {
       errorMessage = "Malformatted ID"
       break
     case "ValidationError":
+    case "JsonWebTokenError":
       errorMessage = error.message
       break
   }
