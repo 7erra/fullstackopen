@@ -17,6 +17,13 @@ function errorHandler(error, request, response, next) {
   next(error)
 }
 
+function tokenExtractor(request, _, next) {
+  const token = /(?<=Bearer ).*/.exec(request.get("authorization"))
+  if (token) request.token = token[0]
+  next()
+}
+
 module.exports = {
-  errorHandler
+  errorHandler,
+  tokenExtractor
 }

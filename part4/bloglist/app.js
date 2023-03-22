@@ -15,7 +15,8 @@ const app = express()
 
 app.use(
   cors(),
-  express.json()
+  express.json(),
+  middleware.tokenExtractor
 )
 app.use("/api/blogs/", blogsRouter)
 app.use("/api/users/", usersRouter)
