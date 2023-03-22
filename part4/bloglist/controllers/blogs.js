@@ -29,6 +29,11 @@ blogsRouter.post("/", async (request, response) => {
 })
 
 blogsRouter.delete("/:id", async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+  const { id: userid } = jwt.verify(request.token, process.env.SECRET)
+  if (blog.user.toString() !== userid.toString()) {
+    return response.status(401).send({ error: "Can't delete note that belongs to another user!" })
+  }
   await Blog.findByIdAndDelete(request.params.id)
   response.status(204).end()
 })
