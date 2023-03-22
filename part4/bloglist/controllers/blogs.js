@@ -1,19 +1,26 @@
 const Blog = require("../models/blog")
+const User = require("../models/user")
 const { Router } = require("express")
 require("express-async-errors")
 
 const blogsRouter = Router()
 
 blogsRouter.get("/", async (_, response) => {
-  const blogs = await Blog.find({})
+  const blogs = await Blog.find({}).populate("user")
   response.json(blogs)
 })
 
 blogsRouter.post("/", async (request, response) => {
-  let body = { ...request.body, likes: request.body.likes ?? 0 }
-  const blog = new Blog(body)
-  const result = await blog.save()
-  response.status(201).json(result)
+  let { title, author, url, likes = 0 } = request.body
+  const user = await User.findOne({})
+  if (!user) {
+    response.status(404).end()
+  }
+  const blog = new Blog({ title, author, url, likes, user: user.id })
+  const savedBlog = await blog.save()
+  user.blogs = user.blogs.concat(savedBlog._id)
+  await user.save()
+  response.status(201).json(savedBlog)
 })
 
 blogsRouter.delete("/:id", async (request, response) => {

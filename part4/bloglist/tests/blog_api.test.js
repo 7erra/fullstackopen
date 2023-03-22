@@ -4,14 +4,22 @@ const Note = require("../models/blog")
 const User = require("../models/user")
 const helper = require("./helper")
 const { default: mongoose } = require("mongoose")
+const bcrypt = require("bcrypt")
 
 const api = supertest(app)
+const usersAPI = "/api/users"
+
+beforeAll(async () => {
+  const passwordHash = await bcrypt.hash(helper.permanentUser.password, 10)
+  const user = new User({ ...helper.permanentUser, password: undefined, passwordHash })
+  await user.save()
+})
 
 beforeEach(async () => {
   await Note.deleteMany({})
   await Note.insertMany(helper.initialBlogs)
 
-  await User.deleteMany({})
+  await User.deleteMany({ username: helper.testUser.username })
 })
 
 describe("Blogs API", () => {
@@ -100,13 +108,11 @@ describe("Blogs API", () => {
   })
 })
 describe("Users API", () => {
-  const testUser = { username: "Terra", password: "password123", name: "Justus Kidding" }
-  const usersAPI = "/api/users"
 
   test("Username must be defined", async () => {
     const { body: { error } } = await api
       .post(usersAPI)
-      .send({ ...testUser, username: undefined })
+      .send({ ...helper.testUser, username: undefined })
       .expect(400)
 
     expect(error).toBeDefined()
@@ -115,7 +121,7 @@ describe("Users API", () => {
   test("Password must be defined", async () => {
     const { body: { error } } = await api
       .post(usersAPI)
-      .send({ ...testUser, password: undefined })
+      .send({ ...helper.testUser, password: undefined })
       .expect(400)
 
     expect(error).toBeDefined()
@@ -124,7 +130,7 @@ describe("Users API", () => {
   test("Username has to be at least 3 chars long", async () => {
     const { body: { error } } = await api
       .post(usersAPI)
-      .send({ ...testUser, username: "Te" })
+      .send({ ...helper.testUser, username: "Te" })
       .expect(400)
 
     expect(error).toBeDefined()
@@ -133,7 +139,7 @@ describe("Users API", () => {
   test("Password has to be at least 3 chars long", async () => {
     const { body: { error } } = await api
       .post(usersAPI)
-      .send({ ...testUser, password: "pa" })
+      .send({ ...helper.testUser, password: "pa" })
       .expect(400)
 
     expect(error).toBeDefined()
@@ -142,12 +148,12 @@ describe("Users API", () => {
   test("Username must be unique", async () => {
     await api
       .post(usersAPI)
-      .send(testUser)
+      .send(helper.testUser)
       .expect(201)
 
     const { body: { error } } = await api
       .post(usersAPI)
-      .send(testUser)
+      .send(helper.testUser)
       .expect(400)
 
     expect(error).toBeDefined()
@@ -156,5 +162,6 @@ describe("Users API", () => {
 })
 
 afterAll(async () => {
+  await User.deleteMany({})
   await mongoose.disconnect()
 })

@@ -32,7 +32,7 @@ usersRouter.post("/", async (request, response) => {
 })
 
 usersRouter.get("/", async (_, res) => {
-  const users = await User.find({})
+  const users = await User.find({}).populate("blogs")
   res.status(200).json(users)
 })
 

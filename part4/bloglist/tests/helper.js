@@ -1,5 +1,17 @@
 const Blog = require("../models/blog")
 
+const testUser = {
+  username: "MCBach",
+  password: "pw1234",
+  name: "Sebastian Bach"
+}
+
+const permanentUser = {
+  username: "DJAmoz",
+  password: "1234password",
+  name: "Wolfgang Amadeus Mozart"
+}
+
 const initialBlogs = [
   {
     _id: "5a422a851b54a676234d17f7",
@@ -55,7 +67,7 @@ const testBlog = {
   title: "Fullstack",
   url: "fullstackopen.com",
   likes: 123,
-  author: "University of Helsinki"
+  author: "University of Helsinki",
 }
 
 async function createTempBlog() {
@@ -67,6 +79,8 @@ async function createTempBlog() {
 module.exports = {
   initialBlogs,
   createTempBlog,
-  testBlog
+  testBlog,
+  testUser,
+  permanentUser
 }
 
