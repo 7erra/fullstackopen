@@ -2,7 +2,6 @@ const Blog = require("../models/blog")
 const User = require("../models/user")
 const { Router } = require("express")
 require("express-async-errors")
-const jwt = require("jsonwebtoken")
 
 const blogsRouter = Router()
 
@@ -13,11 +12,7 @@ blogsRouter.get("/", async (_, response) => {
 
 blogsRouter.post("/", async (request, response) => {
   let { title, author, url, likes = 0 } = request.body
-  const { id } = jwt.verify(request.token, process.env.SECRET)
-  if (!id) {
-    return response.status(401).json({ error: "Token invalid" })
-  }
-  const user = await User.findById(id)
+  const user = await User.findById(request.user)
   if (!user) {
     response.status(404).end()
   }
@@ -29,13 +24,18 @@ blogsRouter.post("/", async (request, response) => {
 })
 
 blogsRouter.delete("/:id", async (request, response) => {
-  const blog = await Blog.findById(request.params.id)
-  const { id: userid } = jwt.verify(request.token, process.env.SECRET)
-  if (blog.user.toString() !== userid.toString()) {
+  const fSuccess = () => response.status(204).end()
+  const { id } = request.params
+  const blog = await Blog.findById(id)
+  if (!blog) {
+    fSuccess()
+    return
+  }
+  if (blog.user.toString() !== request.user) {
     return response.status(401).send({ error: "Can't delete note that belongs to another user!" })
   }
-  await Blog.findByIdAndDelete(request.params.id)
-  response.status(204).end()
+  await Blog.findByIdAndDelete(id)
+  fSuccess()
 })
 
 blogsRouter.put("/:id", async (request, response) => {

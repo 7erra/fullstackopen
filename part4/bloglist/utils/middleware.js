@@ -1,5 +1,7 @@
 const logger = require("../utils/logger")
-function errorHandler(error, request, response, next) {
+const jwt = require("jsonwebtoken")
+
+function errorHandler(error, _, response, next) {
   logger.error(error)
   let errorMessage
   switch (error.name) {
@@ -23,7 +25,14 @@ function tokenExtractor(request, _, next) {
   next()
 }
 
+function userExtractor(request, _, next) {
+  const { id } = jwt.verify(request.token, process.env.SECRET)
+  if (id) request.user = id
+  next()
+}
+
 module.exports = {
   errorHandler,
-  tokenExtractor
+  tokenExtractor,
+  userExtractor
 }
