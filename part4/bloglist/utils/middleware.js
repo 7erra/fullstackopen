@@ -9,9 +9,10 @@ function errorHandler(error, _, response, next) {
       errorMessage = "Malformatted ID"
       break
     case "ValidationError":
-    case "JsonWebTokenError":
       errorMessage = error.message
       break
+    case "JsonWebTokenError":
+      return response.status(401).json({ error: error.message })
   }
   if (errorMessage)
     return response.status(400).json({ error: errorMessage })

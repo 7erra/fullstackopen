@@ -2,6 +2,7 @@ const Blog = require("../models/blog")
 const User = require("../models/user")
 const { Router } = require("express")
 require("express-async-errors")
+const middleware = require("../utils/middleware")
 
 const blogsRouter = Router()
 
@@ -10,7 +11,7 @@ blogsRouter.get("/", async (_, response) => {
   response.json(blogs)
 })
 
-blogsRouter.post("/", async (request, response) => {
+blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
   let { title, author, url, likes = 0 } = request.body
   const user = await User.findById(request.user)
   if (!user) {
@@ -23,7 +24,7 @@ blogsRouter.post("/", async (request, response) => {
   response.status(201).json(savedBlog)
 })
 
-blogsRouter.delete("/:id", async (request, response) => {
+blogsRouter.delete("/:id", middleware.userExtractor, async (request, response) => {
   const fSuccess = () => response.status(204).end()
   const { id } = request.params
   const blog = await Blog.findById(id)
