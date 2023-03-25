@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import BlogField from './components/BlogField'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -8,6 +9,9 @@ const App = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [user, setUser] = useState(null)
+  const [blogTitle, setBlogTitle] = useState("")
+  const [blogAuthor, setBlogAuthor] = useState("")
+  const [blogURL, setBlogURL] = useState("")
 
   async function handleLogin(event) {
     event.preventDefault()
@@ -19,6 +23,7 @@ const App = () => {
       })
       console.log(user)
       setUser(user)
+      blogService.setToken(user.token)
       setUsername("")
       setPassword("")
       window.localStorage.setItem("user", JSON.stringify(user))
@@ -35,6 +40,7 @@ const App = () => {
     const user = window.localStorage.getItem("user")
     if (user) {
       setUser(JSON.parse(user))
+      blogService.setToken(user.token)
     }
   }, [])
 
@@ -70,10 +76,26 @@ const App = () => {
     window.localStorage.removeItem("user")
   }
 
+  async function handleSubmitNewBlog(event) {
+    event.preventDefault()
+    console.log(blogTitle, blogAuthor, blogURL)
+    const responsedata = await blogService.create({ title: blogTitle, author: blogAuthor, url: blogURL })
+    console.log(responsedata)
+    setBlogs(blogs.concat(responsedata))
+
+  }
+
   return (
     <div>
       <h2>blogs</h2>
       <div>{user.name} logged in <button onClick={logOut}>Log Out</button></div>
+      <h2>Create New</h2>
+      <form onSubmit={handleSubmitNewBlog}>
+        <BlogField name="Title" value={blogTitle} fChange={setBlogTitle} />
+        <BlogField name="Author" value={blogAuthor} fChange={setBlogAuthor} />
+        <BlogField name="URL" value={blogURL} fChange={setBlogURL} />
+        <button type="submit">Create</button>
+      </form>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
