@@ -21,6 +21,7 @@ const App = () => {
       setUser(user)
       setUsername("")
       setPassword("")
+      window.localStorage.setItem("user", JSON.stringify(user))
     } catch (exception) {
       console.error("Failed to login: ", exception)
     }
@@ -30,6 +31,11 @@ const App = () => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
     )
+
+    const user = window.localStorage.getItem("user")
+    if (user) {
+      setUser(JSON.parse(user))
+    }
   }, [])
 
   if (user === null) {
@@ -59,9 +65,15 @@ const App = () => {
     )
   }
 
+  function logOut() {
+    setUser(null)
+    window.localStorage.removeItem("user")
+  }
+
   return (
     <div>
       <h2>blogs</h2>
+      <div>{user.name} logged in <button onClick={logOut}>Log Out</button></div>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
