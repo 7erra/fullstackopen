@@ -1,10 +1,12 @@
-const BlogField = ({ name, value, fChange }) => {
-  const id = `blog${name}`
+const BlogField = ({ text, blog, prop, setNewBlog }) => {
+  const defaultBlog = {
+    title: "",
+    author: "",
+    url: ""
+  }
+  const blogToUse = blog ?? defaultBlog
   return (
-    <div>
-      <label htmlFor={id}>{name}: </label>
-      <input id={id} type="text" value={value} onChange={({ target: { value } }) => fChange(value)} />
-    </div>
+    <div>{text}: <input type="text" value={blogToUse[prop]} onChange={(event) => setNewBlog({ ...blogToUse, [prop]: event.target.value })} /></div>
   )
 }
 
