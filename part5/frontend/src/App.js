@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import BlogField from './components/BlogField'
+import Message from './components/Message'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -12,23 +13,24 @@ const App = () => {
   const [blogTitle, setBlogTitle] = useState("")
   const [blogAuthor, setBlogAuthor] = useState("")
   const [blogURL, setBlogURL] = useState("")
+  const [message, setMessage] = useState(null)
 
   async function handleLogin(event) {
     event.preventDefault()
-    console.log("logging in with", username, password)
     try {
       const user = await loginService.login({
         username,
         password
       })
-      console.log(user)
       setUser(user)
       blogService.setToken(user.token)
       setUsername("")
       setPassword("")
       window.localStorage.setItem("user", JSON.stringify(user))
+      setMessage({ text: "Logged in", type: "success" })
     } catch (exception) {
-      console.error("Failed to login: ", exception)
+      console.error("Failed to login")
+      setMessage({ text: "Wrong username or password!", type: "error" })
     }
   }
 
@@ -37,9 +39,10 @@ const App = () => {
       setBlogs(blogs)
     )
 
-    const user = window.localStorage.getItem("user")
-    if (user) {
-      setUser(JSON.parse(user))
+    const storedUser = window.localStorage.getItem("user")
+    if (storedUser) {
+      const user = JSON.parse(storedUser)
+      setUser(user)
       blogService.setToken(user.token)
     }
   }, [])
@@ -48,6 +51,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
+        <Message content={message} setMessage={setMessage} />
         <form onSubmit={handleLogin}>
           <div>Username
             <input
@@ -78,16 +82,21 @@ const App = () => {
 
   async function handleSubmitNewBlog(event) {
     event.preventDefault()
-    console.log(blogTitle, blogAuthor, blogURL)
-    const responsedata = await blogService.create({ title: blogTitle, author: blogAuthor, url: blogURL })
-    console.log(responsedata)
-    setBlogs(blogs.concat(responsedata))
+    try {
+      const responsedata = await blogService.create({ title: blogTitle, author: blogAuthor, url: blogURL })
+      setBlogs(blogs.concat(responsedata))
+      setMessage({ text: `Added new blog ${responsedata.title} by ${responsedata.author}`, type: "success" })
+    } catch (exception) {
+      console.error(exception)
+      setMessage({ text: `Failed to add new blog. Reason: ${exception.message}`, type: "error" })
+    }
 
   }
 
   return (
     <div>
       <h2>blogs</h2>
+      <Message content={message} setMessage={setMessage} />
       <div>{user.name} logged in <button onClick={logOut}>Log Out</button></div>
       <h2>Create New</h2>
       <form onSubmit={handleSubmitNewBlog}>
