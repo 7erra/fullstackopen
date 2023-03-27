@@ -34,9 +34,11 @@ const App = () => {
   }
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    async function getBlogs() {
+      const blogs = await blogService.getAll()
+      setBlogs(blogs.sort((b1, b2) => b2.likes - b1.likes))
+    }
+    getBlogs()
 
     const storedUser = window.localStorage.getItem("user")
     if (storedUser) {
