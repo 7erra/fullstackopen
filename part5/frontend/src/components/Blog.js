@@ -1,7 +1,7 @@
 import { useState } from "react"
 import blogs from "../services/blogs"
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, fRemove }) => {
   const [visible, setVisible] = useState(false)
   const [localBlog, setLocalBlog] = useState(blog)
   const blogStyle = {
@@ -18,13 +18,17 @@ const Blog = ({ blog }) => {
     setLocalBlog({ ...result, user: blog.user })
   }
 
+  if (!localBlog) return null
   return (
     <div style={blogStyle}>
       {localBlog.title} <button onClick={() => setVisible(!visible)}>{visible ? "Hide" : "View"}</button>
       <div style={{ display: visible ? "" : "none" }}>
         {localBlog.url}<br />
         {localBlog.likes} <button onClick={like}>Like</button><br />
-        {localBlog.author}
+        {localBlog.author}<br />
+        {fRemove &&
+          <button onClick={() => fRemove(blog)}>Remove</button>
+        }
       </div>
     </div>
   )

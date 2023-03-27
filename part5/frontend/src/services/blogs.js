@@ -23,6 +23,11 @@ async function update(blog) {
   return response.data
 }
 
+async function remove(blog) {
+  const response = await axios.delete(`${baseUrl}/${blog.id}`, header())
+  return response
+}
+
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { getAll, create, setToken, update }
+export default { getAll, create, setToken, update, remove }
