@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
-import Message from './components/Message'
-import Toggleable from './components/Toggleable'
-import LoginForm from './components/LoginForm'
-import BlogForm from './components/BlogForm'
-import blogService from './services/blogs'
-import loginService from './services/login'
+import { useState, useEffect, useRef } from "react"
+import Blog from "./components/Blog"
+import Message from "./components/Message"
+import Toggleable from "./components/Toggleable"
+import LoginForm from "./components/LoginForm"
+import BlogForm from "./components/BlogForm"
+import blogService from "./services/blogs"
+import loginService from "./services/login"
 
 const App = () => {
   const [blogs, setBlogs] = useState([])

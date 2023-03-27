@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import BlogField from './BlogField'
+import { useState } from "react"
+import BlogField from "./BlogField"
 
 const BlogForm = ({ createBlog }) => {
   const [newBlog, setNewBlog] = useState(null)
