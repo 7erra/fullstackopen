@@ -20,7 +20,7 @@ const Blog = ({ blog, fRemove }) => {
 
   if (!localBlog) return null
   return (
-    <div style={blogStyle}>
+    <div className="blog" style={blogStyle}>
       <div className="blog-title">{localBlog.title} <button onClick={() => setVisible(!visible)}>{visible ? "Hide" : "View"}</button></div>
       <div className="blog-author">{localBlog.author}</div>
       <div className="blog-url" style={{ display: visible ? "" : "none" }}>{localBlog.url}</div>
