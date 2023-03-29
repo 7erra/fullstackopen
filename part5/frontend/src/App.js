@@ -69,6 +69,12 @@ const App = () => {
     }
   }
 
+  async function likeBlog(blog) {
+    const likedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id }
+    console.log(likedBlog)
+    await blogService.update(likedBlog)
+  }
+
   return (
     <div>
       <h1>Blogs App</h1>
@@ -94,7 +100,7 @@ const App = () => {
       }
       <h2>Blogs</h2>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} fRemove={blog.user && blog.user.id === user.id ? removeBlog : undefined} />
+        <Blog key={blog.id} blog={blog} fLike={() => { likeBlog(blog) }} fRemove={blog.user && blog.user.id === user.id ? removeBlog : undefined} />
       )}
     </div>
   )
