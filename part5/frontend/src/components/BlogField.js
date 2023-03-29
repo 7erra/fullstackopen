@@ -1,5 +1,5 @@
 import PropTypes from "prop-types"
-const BlogField = ({ text, blog, prop, setNewBlog }) => {
+const BlogField = ({ text, blog, prop, setNewBlog, placeholder }) => {
   const defaultBlog = {
     title: "",
     author: "",
@@ -7,7 +7,7 @@ const BlogField = ({ text, blog, prop, setNewBlog }) => {
   }
   const blogToUse = blog ? blog : defaultBlog
   return (
-    <div>{text}: <input type="text" value={blogToUse[prop]} onChange={(event) => setNewBlog({ ...blogToUse, [prop]: event.target.value })} /></div>
+    <div>{text}: <input type="text" value={blogToUse[prop]} onChange={(event) => setNewBlog({ ...blogToUse, [prop]: event.target.value })} placeholder={placeholder} /></div>
   )
 }
 

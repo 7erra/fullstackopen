@@ -16,9 +16,9 @@ const BlogForm = ({ createBlog }) => {
 
       <form onSubmit={addBlog}>
         <div>
-          <BlogField text="Title" blog={newBlog} prop="title" setNewBlog={setNewBlog} />
-          <BlogField text="Author" blog={newBlog} prop="author" setNewBlog={setNewBlog} />
-          <BlogField text="URL" blog={newBlog} prop="url" setNewBlog={setNewBlog} />
+          <BlogField text="Title" blog={newBlog} prop="title" setNewBlog={setNewBlog} placeholder="Enter title" />
+          <BlogField text="Author" blog={newBlog} prop="author" setNewBlog={setNewBlog} placeholder="Enter author" />
+          <BlogField text="URL" blog={newBlog} prop="url" setNewBlog={setNewBlog} placeholder="Enter URL" />
         </div>
         <button type="submit">Add Blog</button>
       </form>

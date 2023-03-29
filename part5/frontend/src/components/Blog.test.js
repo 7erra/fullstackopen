@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react"
 import { act } from "react-dom/test-utils"
 import userEvent from "@testing-library/user-event"
 import Blog from "./Blog"
+import BlogForm from "./BlogForm"
 
 const testBlog = {
   author: "University of Helsinki",
@@ -40,8 +41,26 @@ test("Call like twice", async () => {
   const testContainer = render(<Blog blog={testBlog} fLike={mockHandler} />)
   const user = userEvent.setup()
   const button = testContainer.getByText("Like")
-  screen.debug(button)
   await user.click(button)
   await user.click(button)
   expect(mockHandler.mock.calls).toHaveLength(2)
+})
+
+test("Correct params on new blog", async () => {
+  const createBlog = jest.fn()
+  const user = userEvent.setup()
+  render(<BlogForm createBlog={createBlog} />)
+  const inputTitle = screen.getByPlaceholderText("title", { exact: false })
+  const inputAuthor = screen.getByPlaceholderText("author", { exact: false })
+  const inputURL = screen.getByPlaceholderText("URL", { exact: false })
+  await act(async () => {
+    await user.type(inputTitle, testBlog.title)
+    await user.type(inputAuthor, testBlog.author)
+    await user.type(inputURL, testBlog.url)
+    const sendButton = screen.getByText("Add Blog")
+    await user.click(sendButton)
+  })
+  expect(createBlog.mock.calls).toHaveLength(1)
+  expect(testBlog).toMatchObject(createBlog.mock.calls[0][0])
+
 })
