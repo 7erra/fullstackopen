@@ -80,7 +80,7 @@ const App = () => {
       <h1>Blogs App</h1>
       <Message content={message} setMessage={setMessage} />
       {!user &&
-        <Toggleable buttonLabel="Login">
+        <Toggleable buttonLabel="Login" defaultVisibility={true}>
           <LoginForm
             username={username}
             password={password}
