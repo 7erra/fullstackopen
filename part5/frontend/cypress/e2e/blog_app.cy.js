@@ -74,12 +74,19 @@ describe("Blog app", function() {
           cy.visit("http://localhost:3000")
         })
       })
+
       it("Can be liked", function() {
         cy.contains("View").click()
         cy.contains("Like").click()
         cy.visit("http://localhost:3000")
         cy.contains("View").click()
         cy.get(".blog-likes").contains("1")
+      })
+
+      it("Can be deleted", function() {
+        cy.contains("View").click()
+        cy.contains("Remove").click()
+        cy.get("html").should("not.contain", "Localhost")
       })
 
     })
