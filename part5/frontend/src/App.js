@@ -41,7 +41,6 @@ const App = () => {
     getBlogs()
 
     const storedUser = window.localStorage.getItem("user")
-    console.log(storedUser)
     if (storedUser) {
       const user = JSON.parse(storedUser)
       setUser(user)
@@ -72,7 +71,6 @@ const App = () => {
 
   async function likeBlog(blog) {
     const likedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id }
-    console.log(likedBlog)
     await blogService.update(likedBlog)
   }
 

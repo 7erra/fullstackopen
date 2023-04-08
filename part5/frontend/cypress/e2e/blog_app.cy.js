@@ -39,12 +39,13 @@ describe("Blog app", function() {
   })
 
   describe("When logged in", function() {
-    beforeEach(async function() {
-      let { body } = await cy.request("POST", api + "login", {
+    beforeEach(function() {
+      cy.request("POST", api + "login", {
         username: "MaxM", password: "password123"
+      }).then(({ body }) => {
+        localStorage.setItem("user", JSON.stringify(body))
+        cy.visit("http://localhost:3000")
       })
-      localStorage.setItem("user", JSON.stringify(body))
-      cy.visit("http://localhost:3000")
     })
 
     it("A new blog can be created", function() {
@@ -55,5 +56,33 @@ describe("Blog app", function() {
       cy.get("#blog-submit").click()
       cy.contains("Full stack open")
     })
+
+    describe("and a blog exists", function() {
+      beforeEach(function() {
+        cy.request({
+          url: "http://localhost:3000/api/blogs",
+          method: "POST",
+          body: {
+            title: "Localhost",
+            url: "http://localhost:3000",
+            author: "Me"
+          },
+          headers: {
+            "Authorization": `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
+          }
+        }).then(() => {
+          cy.visit("http://localhost:3000")
+        })
+      })
+      it("Can be liked", function() {
+        cy.contains("View").click()
+        cy.contains("Like").click()
+        cy.visit("http://localhost:3000")
+        cy.contains("View").click()
+        cy.get(".blog-likes").contains("1")
+      })
+
+    })
+
   })
 })
