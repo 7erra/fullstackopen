@@ -57,6 +57,22 @@ describe("Blog app", function() {
       cy.contains("Full stack open")
     })
 
+    it.only("sorts blogs by likes", function() {
+      const likes = []
+      for (let i = 0; i < 10; i++) {
+        likes.push(Math.floor(Math.random() * 100))
+        cy.createBlog({
+          title: `Localhost ${i}`,
+          url: `http://localhost:${3000 + i}`,
+          author: "Me",
+          likes: likes[i]
+        })
+      }
+      cy.visit("")
+      cy.get(".blog").eq(0).should("contain", Math.max(...likes))
+      cy.get(".blog").eq(likes.length - 1).should("contain", Math.min(...likes))
+    })
+
     describe("and a blog exists", function() {
       beforeEach(function() {
         cy.request({
