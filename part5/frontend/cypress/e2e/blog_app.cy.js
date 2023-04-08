@@ -37,4 +37,23 @@ describe("Blog app", function() {
 
     })
   })
+
+  describe("When logged in", function() {
+    beforeEach(async function() {
+      let { body } = await cy.request("POST", api + "login", {
+        username: "MaxM", password: "password123"
+      })
+      localStorage.setItem("user", JSON.stringify(body))
+      cy.visit("http://localhost:3000")
+    })
+
+    it("A new blog can be created", function() {
+      cy.contains("New Blog").click()
+      cy.get("#blog-title").type("Full stack open")
+      cy.get("#blog-author").type("Univerity of Helsinki")
+      cy.get("#blog-url").type("fullstackopen.com")
+      cy.get("#blog-submit").click()
+      cy.contains("Full stack open")
+    })
+  })
 })

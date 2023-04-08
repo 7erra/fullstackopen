@@ -7,7 +7,7 @@ const BlogField = ({ text, blog, prop, setNewBlog, placeholder }) => {
   }
   const blogToUse = blog ? blog : defaultBlog
   return (
-    <div>{text}: <input type="text" value={blogToUse[prop]} onChange={(event) => setNewBlog({ ...blogToUse, [prop]: event.target.value })} placeholder={placeholder} /></div>
+    <div>{text}: <input id={`blog-${prop}`} type="text" value={blogToUse[prop]} onChange={(event) => setNewBlog({ ...blogToUse, [prop]: event.target.value })} placeholder={placeholder} /></div>
   )
 }
 

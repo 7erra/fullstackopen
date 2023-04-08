@@ -20,7 +20,7 @@ const BlogForm = ({ createBlog }) => {
           <BlogField text="Author" blog={newBlog} prop="author" setNewBlog={setNewBlog} placeholder="Enter author" />
           <BlogField text="URL" blog={newBlog} prop="url" setNewBlog={setNewBlog} placeholder="Enter URL" />
         </div>
-        <button type="submit">Add Blog</button>
+        <button id="blog-submit" type="submit">Add Blog</button>
       </form>
     </div>
   )
