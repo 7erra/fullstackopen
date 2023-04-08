@@ -89,6 +89,12 @@ describe("Blog app", function() {
         cy.get("html").should("not.contain", "Localhost")
       })
 
+      it("Can not be deleted by anyone else", function() {
+        cy.contains("Log Out").click()
+        cy.contains("View").click()
+        cy.get(".blog").should("not.contain", "Remove")
+      })
+
     })
 
   })
