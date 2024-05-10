@@ -31,5 +31,10 @@ const calculateExercises = (days: Array<number>, target: number): Result => {
   }
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
 
+const [, , target, ...days] = process.argv.map(Number);
+if (isNaN(target) || days.some(isNaN)) {
+  throw new Error('Provided values were not numbers!');
+}
+
+console.log(calculateExercises(days, target));

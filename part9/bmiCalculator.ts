@@ -19,4 +19,9 @@ const caluclateBMI = (height: number, weight: number): string => {
   }
 }
 
-console.log(caluclateBMI(180, 74));
+const [, , weight, height] = process.argv.map(x => Number(x))
+if (isNaN(weight) || isNaN(height)) {
+  throw new Error("Invalid input");
+}
+
+console.log(caluclateBMI(weight, height))
