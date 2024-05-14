@@ -11,13 +11,13 @@ interface Result {
 const calculateExercises = (days: Array<number>, target: number): Result => {
   const average = days.reduce((a, b) => a + b, 0) / days.length;
   let rating = 1;
-  let ratingDescription = 'unfortunately you did not achieve your goals this week. try again next week!'
+  let ratingDescription = "unfortunately you did not achieve your goals this week. try again next week!";
   if (average >= target) {
     rating = 3;
-    ratingDescription = 'very nice! you achieved your goals this week!';
+    ratingDescription = "very nice! you achieved your goals this week!";
   } else if (average >= target / 2) {
     rating = 2;
-    ratingDescription = 'not too bad but could be better';
+    ratingDescription = "not too bad but could be better";
   }
 
   return {
@@ -28,13 +28,13 @@ const calculateExercises = (days: Array<number>, target: number): Result => {
     ratingDescription: ratingDescription,
     target: target,
     average: average
-  }
-}
+  };
+};
 
 
 const [, , target, ...days] = process.argv.map(Number);
 if (isNaN(target) || days.some(isNaN)) {
-  throw new Error('Provided values were not numbers!');
+  throw new Error("Provided values were not numbers!");
 }
 
 console.log(calculateExercises(days, target));

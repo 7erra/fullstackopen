@@ -1,5 +1,5 @@
 function calculateBMI(height: number, weight: number): string {
-  const bmi = weight / Math.pow(height / 100, 2)
+  const bmi = weight / Math.pow(height / 100, 2);
   if (bmi < 16) {
     return "Under weight (servere thinness)";
   } else if (bmi < 17) {
@@ -19,4 +19,4 @@ function calculateBMI(height: number, weight: number): string {
   }
 }
 
-export { calculateBMI }
+export { calculateBMI };
