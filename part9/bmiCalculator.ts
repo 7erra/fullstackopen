@@ -1,4 +1,4 @@
-const caluclateBMI = (height: number, weight: number): string => {
+function calculateBMI(height: number, weight: number): string {
   const bmi = weight / Math.pow(height / 100, 2)
   if (bmi < 16) {
     return "Under weight (servere thinness)";
@@ -14,14 +14,9 @@ const caluclateBMI = (height: number, weight: number): string => {
     return "Obese (Class I)";
   } else if (bmi < 40) {
     return "Obese (Class II)";
-  } else if (bmi > 40) {
+  } else {
     return "Obese (Class III)";
   }
 }
 
-const [, , weight, height] = process.argv.map(x => Number(x))
-if (isNaN(weight) || isNaN(height)) {
-  throw new Error("Invalid input");
-}
-
-console.log(caluclateBMI(weight, height))
+export { calculateBMI }
