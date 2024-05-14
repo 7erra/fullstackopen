@@ -1,4 +1,4 @@
-interface Result {
+export interface Result {
   periodLength: number,
   trainingDays: number,
   success: boolean,
@@ -8,7 +8,7 @@ interface Result {
   average: number
 }
 
-const calculateExercises = (days: Array<number>, target: number): Result => {
+export const calculateExercises = (days: Array<number>, target: number): Result => {
   const average = days.reduce((a, b) => a + b, 0) / days.length;
   let rating = 1;
   let ratingDescription = "unfortunately you did not achieve your goals this week. try again next week!";
@@ -32,9 +32,9 @@ const calculateExercises = (days: Array<number>, target: number): Result => {
 };
 
 
-const [, , target, ...days] = process.argv.map(Number);
-if (isNaN(target) || days.some(isNaN)) {
-  throw new Error("Provided values were not numbers!");
-}
-
-console.log(calculateExercises(days, target));
+// const [, , target, ...days] = process.argv.map(Number);
+// if (isNaN(target) || days.some(isNaN)) {
+//   throw new Error("Provided values were not numbers!");
+// }
+//
+// console.log(calculateExercises(days, target));
